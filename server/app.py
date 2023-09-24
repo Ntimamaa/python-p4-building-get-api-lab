@@ -14,25 +14,26 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
-@app.route('/')
-def index():
-    return '<h1>Bakery GET API</h1>'
 
-@app.route('/bakeries')
-def bakeries():
-    return ''
+@app.route('/bakeries', methods=['GET'])
+def get_bakeries():
+    bakeries = Bakery.query.all()
+    return jsonify([bakery.to_dict() for bakery in bakeries])
 
-@app.route('/bakeries/<int:id>')
-def bakery_by_id(id):
-    return ''
+@app.route('/bakeries/<int:id>', methods=['GET'])
+def get_bakery_by_id(id):
+    bakery = Bakery.query.get_or_404(id)
+    return jsonify(bakery.to_dict())
 
-@app.route('/baked_goods/by_price')
-def baked_goods_by_price():
-    return ''
+@app.route('/baked_goods/by_price', methods=['GET'])
+def get_baked_goods_by_price():
+    baked_goods = BakedGood.query.order_by(BakedGood.price.desc()).all()
+    return jsonify([baked_good.to_dict() for baked_good in baked_goods])
 
-@app.route('/baked_goods/most_expensive')
-def most_expensive_baked_good():
-    return ''
+@app.route('/baked_goods/most_expensive', methods=['GET'])
+def get_most_expensive_baked_good():
+    baked_good = BakedGood.query.order_by(BakedGood.price.desc()).first()
+    return jsonify(baked_good.to_dict()) if baked_good else jsonify({})
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
